@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.database import SessionLocal
 from app.models.user import User
-from app.schemas.user import RegisterSchema, LoginSchema, UpdateUserSchema
+from app.schemas.user import RegisterSchema, LoginSchema
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -12,7 +12,7 @@ def register(user: RegisterSchema):
     db = SessionLocal()
 
     existing_user = db.query(User).filter(
-        User.mobile == user.mobile
+        User.phone == user.mobile
     ).first()
 
     if existing_user:
@@ -22,8 +22,11 @@ def register(user: RegisterSchema):
         )
 
     new_user = User(
-        mobile=user.mobile,
-        password=user.password
+        name="Customer",
+        email=f"{user.mobile}@mistripoint.com",
+        phone=user.mobile,
+        password=user.password,
+        role="customer"
     )
 
     db.add(new_user)
@@ -42,7 +45,7 @@ def login(user: LoginSchema):
     db = SessionLocal()
 
     existing_user = db.query(User).filter(
-        User.mobile == user.mobile
+        User.phone == user.mobile
     ).first()
 
     if not existing_user:
@@ -62,6 +65,7 @@ def login(user: LoginSchema):
         "user_id": existing_user.id
     }
 
+
 @router.get("/customers/{user_id}")
 def get_customer(user_id: int):
 
@@ -77,42 +81,10 @@ def get_customer(user_id: int):
             detail="Customer not found"
         )
 
-    return user
-
-@router.get("/customers")
-def get_customers():
-
-    db = SessionLocal()
-
-    users = db.query(User).all()
-
-    return users
-
-
-@router.put("/customers/{user_id}")
-def update_customer(
-    user_id: int,
-    updated_user: UpdateUserSchema
-):
-
-    db = SessionLocal()
-
-    user = db.query(User).filter(
-        User.id == user_id
-    ).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="Customer not found"
-        )
-
-    user.mobile = updated_user.mobile
-
-    db.commit()
-    db.refresh(user)
-
     return {
-        "message": "Customer updated successfully",
-        "user": user
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "phone": user.phone,
+        "role": user.role
     }
