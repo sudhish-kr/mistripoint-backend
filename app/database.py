@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "sqlite:///./mistripoint.db"
+DATABASE_URL = "postgresql://neondb_owner:npg_qdrLhR6e3OiD@ep-fancy-cake-atnmceu1-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require"
 
 engine = create_engine(DATABASE_URL)
 
@@ -10,5 +10,7 @@ SessionLocal = sessionmaker(
     autoflush=False,
     bind=engine
 )
+
+Base = declarative_base()
 
 Base = declarative_base()
