@@ -24,6 +24,8 @@ def register(user: RegisterSchema):
     new_user = User(
         name="Customer",
         email=f"{user.mobile}@mistripoint.com",
+        first_name=user.first_name,
+        last_name=user.last_name,
         phone=user.mobile,
         password=user.password,
         role="customer"
