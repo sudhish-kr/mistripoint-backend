@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_validator
 
 
+
 class RegisterSchema(BaseModel):
     first_name: str
     last_name: str
@@ -50,3 +51,7 @@ class UpdateUserSchema(BaseModel):
 class ServiceRequestSchema(BaseModel):
     worker_type: str
     problem: str
+
+class ForgotPasswordSchema(BaseModel):
+    mobile: str
+    new_password: str
