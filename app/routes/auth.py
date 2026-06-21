@@ -1,8 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from app.database import SessionLocal
 from app.models.user import User
-from app.schemas.user import RegisterSchema, LoginSchema
-
+from app.models.service_request import ServiceRequest
+from app.schemas.user import (
+    RegisterSchema,
+    LoginSchema,
+    ServiceRequestSchema
+)
+from app.models.service_request import ServiceRequest
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
@@ -22,12 +27,15 @@ def register(user: RegisterSchema):
         )
 
     new_user = User(
-        name="Customer",
-        email=f"{user.mobile}@mistripoint.com",
+        name=f"{user.first_name} {user.last_name}",
         first_name=user.first_name,
         last_name=user.last_name,
+        email=f"{user.mobile}@mistripoint.com",
         phone=user.mobile,
         password=user.password,
+        city=user.city,
+        address=user.address,
+        pincode=user.pincode,
         role="customer"
     )
 
@@ -39,7 +47,6 @@ def register(user: RegisterSchema):
         "message": "User Registered Successfully",
         "id": new_user.id
     }
-
 
 @router.post("/login")
 def login(user: LoginSchema):
@@ -90,3 +97,46 @@ def get_customer(user_id: int):
         "phone": user.phone,
         "role": user.role
     }
+
+@router.post("/request-service/{user_id}")
+def request_service(user_id: int, data: ServiceRequestSchema):
+
+    db = SessionLocal()
+
+    new_request = ServiceRequest(
+        customer_id=user_id,
+        worker_type=data.worker_type,
+        problem=data.problem
+    )
+
+    db.add(new_request)
+    db.commit()
+    db.refresh(new_request)
+
+    return {
+        "message": "Request Created Successfully",
+        "request_id": new_request.id,
+        "status": new_request.status
+    }
+
+
+@router.get("/my-requests/{user_id}")
+def my_requests(user_id: int):
+
+    db = SessionLocal()
+
+    requests = db.query(ServiceRequest).filter(
+        ServiceRequest.customer_id == user_id
+    ).all()
+
+    result = []
+
+    for req in requests:
+        result.append({
+            "request_id": req.id,
+            "worker_type": req.worker_type,
+            "problem": req.problem,
+            "status": req.status
+        })
+
+    return result

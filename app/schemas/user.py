@@ -1,10 +1,14 @@
 from pydantic import BaseModel, field_validator
 
+
 class RegisterSchema(BaseModel):
     first_name: str
     last_name: str
     mobile: str
     password: str
+    city: str
+    address: str
+    pincode: str
 
     @field_validator("mobile")
     @classmethod
@@ -32,3 +36,17 @@ class LoginSchema(BaseModel):
             raise ValueError("Mobile number must be exactly 10 digits")
 
         return value
+
+
+class UpdateUserSchema(BaseModel):
+    mobile: str
+
+    @field_validator("mobile")
+    @classmethod
+    def validate_mobile(cls, value):
+        if not value.isdigit():
+            raise ValueError("Mobile number must contain only digits")
+
+class ServiceRequestSchema(BaseModel):
+    worker_type: str
+    problem: str
