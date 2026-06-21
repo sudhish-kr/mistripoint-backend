@@ -5,7 +5,7 @@ from app.routes import auth
 from app.models.user import User
 from app.models.service_request import ServiceRequest
 Base.metadata.create_all(bind=engine)
-
+from app.models.otp import OTPVerification
 app = FastAPI()
 
 app.include_router(auth.router)

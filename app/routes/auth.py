@@ -5,13 +5,8 @@ from app.models.service_request import ServiceRequest
 from app.schemas.user import (
     RegisterSchema,
     LoginSchema,
-    ServiceRequestSchema
-)
-from app.schemas.user import (
-    RegisterSchema,
-    LoginSchema,
     ServiceRequestSchema,
-    ForgotPasswordSchema
+    ForgotPasswordSchema,
 )
 from app.models.service_request import ServiceRequest
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -170,27 +165,4 @@ def all_customers():
     return {
         "total_customers": len(result),
         "customers": result
-    }
-
-@router.put("/forgot-password")
-def forgot_password(data: ForgotPasswordSchema):
-
-    db = SessionLocal()
-
-    user = db.query(User).filter(
-        User.phone == data.mobile
-    ).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
-
-    user.password = data.new_password
-
-    db.commit()
-
-    return {
-        "message": "Password updated successfully"
     }

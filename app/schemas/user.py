@@ -39,8 +39,9 @@ class LoginSchema(BaseModel):
         return value
 
 
-class UpdateUserSchema(BaseModel):
+class ForgotPasswordSchema(BaseModel):
     mobile: str
+    new_password: str
 
     @field_validator("mobile")
     @classmethod
@@ -48,10 +49,11 @@ class UpdateUserSchema(BaseModel):
         if not value.isdigit():
             raise ValueError("Mobile number must contain only digits")
 
+        if len(value) != 10:
+            raise ValueError("Mobile number must be exactly 10 digits")
+
+        return value
+
 class ServiceRequestSchema(BaseModel):
     worker_type: str
     problem: str
-
-class ForgotPasswordSchema(BaseModel):
-    mobile: str
-    new_password: str
