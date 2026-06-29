@@ -57,3 +57,23 @@ class ForgotPasswordSchema(BaseModel):
 class ServiceRequestSchema(BaseModel):
     worker_type: str
     problem: str
+
+class AddToCartSchema(BaseModel):
+    service_id: int
+    quantity: int = 1
+
+class AddressSchema(BaseModel):
+    full_name: str
+    phone: str
+    address: str
+    city: str
+    pincode: str
+
+class CreateBookingSchema(BaseModel):
+    address_id: int
+
+class UpdateStatusSchema(BaseModel):
+    status: str
+
+class UpdateBookingStatusSchema(BaseModel):
+    status: str
